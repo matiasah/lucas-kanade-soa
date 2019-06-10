@@ -14,7 +14,7 @@ RUN sudo apt-get install bash
 RUN apt-get install software-properties-common -y
 
 # Agregar repositorio para instalar libjasper-dev
-RUN sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
+#RUN sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
 
 # Instalar dependencias
 RUN sudo apt-get install build-essential -y
@@ -30,7 +30,7 @@ RUN sudo apt-get install libtbb-dev -y
 RUN sudo apt-get install libjpeg-dev -y
 RUN sudo apt-get install libpng-dev -y
 RUN sudo apt-get install libtiff-dev -y
-RUN sudo apt-get install libjasper-dev -y
+#RUN sudo apt-get install libjasper-dev -y
 RUN sudo apt-get install libdc1394-22-dev -y
 
 # Copiar requirements.txt
