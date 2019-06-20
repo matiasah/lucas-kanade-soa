@@ -1,5 +1,5 @@
 <div class="container section h-100">
-    <div class="row h-100 justify-content-center d-flex">
+    <div class="row h-25 justify-content-center d-flex">
         <div class="align-self-center justify-content-center d-flex">
             <mat-card class="mat-elevation-z8">
 
@@ -11,10 +11,61 @@
 
                 <form class="section" #form="ngForm" (ngSubmit)="onSubmit()">
                     <div class="row">
+                        <input type="file" name="video" accept="video/*"
+                            (change)="handleFileInput($event.target.files)">
+                    </div>
+
+                    <mat-progress-bar mode="query" *ngIf="enviando"></mat-progress-bar>
+
+                    <div class="col-sm-12 col-md-3 offset-sm-0 offset-md-6" *ngIf="!enviando">
+                        <button class="w-100" type="submit" mat-raised-button color="primary">Enviar</button>
                     </div>
                 </form>
 
             </mat-card>
         </div>
+    </div>
+
+    <div class="row justify-content-center d-flex" *ngIf="!videoResponse && enviando">
+        <img src="https://media3.giphy.com/media/bAplZhiLAsNnG/giphy.gif" alt="trabajando">
+    </div>
+
+    <div class="row justify-content-center d-flex" *ngIf="videoResponse">
+        <a href="{{downloadPath}}">Descargar video</a>
+    </div>
+
+    <div class="row justify-content-center d-flex">
+
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
+
+
+        <div class="video" *ngIf="videoResponse">
+            <!--
+            <video controls (click)="toggleVideo()" #videoPlayer>
+                <source [src]="srcVideo" type='video/*' />
+                Browser not supported
+            </video>
+            -->
+
+            <img height="42" width="80" *ngFor="let imagen of videoResponse" src="{{ extractBase64(imagen) }}" />
+
+        </div>
+
     </div>
 </div>

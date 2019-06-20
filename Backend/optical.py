@@ -1,8 +1,9 @@
 import cv2 as cv
 import numpy as np
 import time
-from flask import Blueprint, render_template, jsonify, send_file, request
+from flask import Blueprint, render_template, jsonify, send_file, request, Response, stream_with_context, make_response
 from werkzeug.datastructures import ImmutableMultiDict
+import base64
 
 mod = Blueprint('LK', __name__)
 
@@ -12,7 +13,7 @@ def optical_flow():
     
     video = request.files['video']
 
-    video.save("uploads/" + video.filename)        
+    video.save("uploads/" + video.filename)
 
     start = time.time()
 
@@ -50,12 +51,15 @@ def optical_flow():
     pathOut = "output/" + video.filename
     fps = 30
     
-    fourcc = cv.VideoWriter_fourcc(*"MJPG")
+    fourcc = cv.VideoWriter_fourcc(*'XVID')
     out = cv.VideoWriter(pathOut, fourcc, 30.0, size, True)
+
+    ## Almacenar todos los frames en los q se detectan movimiento
+    frames_movimiento = []
 
     while(cap.isOpened()):    
 
-        count_frames += 1
+        count_frames += 1        
 
         if (count_frames > 60):
             prev = cv.goodFeaturesToTrack(prev_gray, mask = None, **feature_params)
@@ -87,6 +91,9 @@ def optical_flow():
         # Selects good feature points for next position
         good_new = next[status == 1]
 
+        ## variable para indicar si se econtró movimiento        
+        movimiento_detectado = False
+
         # Draws the optical flow tracks
         for i, (new, old) in enumerate(zip(good_new, good_old)):
 
@@ -94,21 +101,30 @@ def optical_flow():
             a, b = new.ravel()
 
             # Returns a contiguous flattened array as (x, y) coordinates for old point
-            c, d = old.ravel()
-
-            ## Calcular la velocidad para emitir una alerta
-            desplazamiento = np.array((a,b)) - np.array((c,d))
-            if( desplazamiento[0] > 2 and desplazamiento[1] > 2):
-                print("Hay movimiento!!!")
+            c, d = old.ravel()            
 
             # Draws line between new and old position with green color and 2 thickness
             #mask = cv.line(mask, (a, b), (c, d), color, 2)
 
             # Draws filled circle (thickness of -1) at new position with green color and radius of 3
-            frame = cv.circle(frame, (a, b), 5, color, -1)        
+            frame = cv.circle(frame, (a, b), 5, color, -1)
+
+            ## Calcular la velocidad para emitir una alerta
+            desplazamiento = np.array((a,b)) - np.array((c,d))
+            if( desplazamiento[0] > 2 and desplazamiento[1] > 2):
+                movimiento_detectado = True
+                print("Hay movimiento!!!")
 
         # Overlays the optical flow tracks on the original frame
         output = cv.add(frame, mask)
+
+        ## Cuando se detecta un movimiento, se agrega el cuadro al array
+        if movimiento_detectado:
+            cv.imwrite('color_img.jpg', output)
+            retval, buffer = cv.imencode('.jpg', output)
+
+            jpg_as_text = str(base64.b64encode(buffer))
+            frames_movimiento.append({ 'imagen': jpg_as_text+""})
 
         out.write(output)
 
@@ -124,5 +140,26 @@ def optical_flow():
 
     end = time.time()
     
-    out.release()
-    return send_file("output/" + video.filename, attachment_filename='video.mp4')
+    out.release()  
+    
+    return jsonify(frames_movimiento)
+    #return send_file("output/" + video.filename, as_attachment=True)
+
+@mod.route("/video-output/<nameVideo>", methods=['GET'])
+def video(nameVideo):
+    filename = "output/" + nameVideo
+    return send_file(filename, mimetype="video/*", attachment_filename="video.mp4")
+    
+    video = open(filename, 'rb')
+    video_read = video.read()
+    videoResponse = str(base64.encodestring(video_read))
+    
+    resp = {
+        'name': nameVideo,
+        'data': videoResponse + ""
+    }
+ 
+    return jsonify(resp)
+    #response = make_response(send_file(videoResponse,mimetype='video/*'))
+    #response.headers['Content-Transfer-Encoding']='base64'
+    #return response
