@@ -4,6 +4,8 @@ import time
 from flask import Blueprint, render_template, jsonify, send_file, request, Response, stream_with_context, make_response
 from werkzeug.datastructures import ImmutableMultiDict
 import base64
+import matplotlib.pyplot as plt
+from io import BytesIO
 
 mod = Blueprint('LK', __name__)
 
@@ -18,7 +20,7 @@ def optical_flow():
     start = time.time()
 
     # Parameters for Shi-Tomasi corner detection
-    feature_params = dict(maxCorners = 300, qualityLevel = 0.1, minDistance = 2, blockSize = 7)
+    feature_params = dict(maxCorners = 300, qualityLevel = 0.6, minDistance = 2, blockSize = 7)
 
     # Parameters for Lucas-Kanade optical flow
     lk_params = dict(winSize = (15,15), maxLevel = 5, criteria = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03))
@@ -51,7 +53,7 @@ def optical_flow():
     pathOut = "output/" + video.filename
     fps = 30
     
-    fourcc = cv.VideoWriter_fourcc(*'XVID')
+    fourcc = cv.VideoWriter_fourcc(*'MJPG')
     out = cv.VideoWriter(pathOut, fourcc, 30.0, size, True)
 
     ## Almacenar todos los frames en los q se detectan movimiento
@@ -61,10 +63,10 @@ def optical_flow():
 
         count_frames += 1        
 
-        if (count_frames > 60):
-            prev = cv.goodFeaturesToTrack(prev_gray, mask = None, **feature_params)
-            count_frames = 0
-            mask = np.zeros_like(first_frame)
+        #if (count_frames > 60):
+        prev = cv.goodFeaturesToTrack(prev_gray, mask = None, **feature_params)
+        count_frames = 0
+        mask = np.zeros_like(first_frame)
 
         # ret = a boolean return value from getting the frame, frame = the current frame being projected in the video
         ret, frame = cap.read()    
@@ -94,6 +96,12 @@ def optical_flow():
         ## variable para indicar si se econtró movimiento        
         movimiento_detectado = False
 
+        ## Puntos en los cuales se detacta movimiento para dibujar los vectores
+        X=[]
+        X_dir=[]
+        Y=[]
+        Y_dir=[]
+
         # Draws the optical flow tracks
         for i, (new, old) in enumerate(zip(good_new, good_old)):
 
@@ -104,15 +112,20 @@ def optical_flow():
             c, d = old.ravel()            
 
             # Draws line between new and old position with green color and 2 thickness
-            #mask = cv.line(mask, (a, b), (c, d), color, 2)
+            mask = cv.line(mask, (a, b), (c, d), color, 2)
 
             # Draws filled circle (thickness of -1) at new position with green color and radius of 3
             frame = cv.circle(frame, (a, b), 5, color, -1)
 
             ## Calcular la velocidad para emitir una alerta
             desplazamiento = np.array((a,b)) - np.array((c,d))
-            if( desplazamiento[0] > 2 and desplazamiento[1] > 2):
+            if( abs(desplazamiento[0]) > 2 and abs(desplazamiento[1]) > 2):
                 movimiento_detectado = True
+                X_dir.append(desplazamiento[0])
+                Y_dir.append(desplazamiento[1])
+                X.append(c)
+                Y.append(d)
+                
                 print("Hay movimiento!!!")
 
         # Overlays the optical flow tracks on the original frame
@@ -120,11 +133,19 @@ def optical_flow():
 
         ## Cuando se detecta un movimiento, se agrega el cuadro al array
         if movimiento_detectado:
-            cv.imwrite('color_img.jpg', output)
-            retval, buffer = cv.imencode('.jpg', output)
+            #cv.imwrite('color_img.jpg', output)
+            #retval, buffer = cv.imencode('.jpg', output)
 
-            jpg_as_text = str(base64.b64encode(buffer))
-            frames_movimiento.append({ 'imagen': jpg_as_text+""})
+            #jpg_as_text = str(base64.b64encode(buffer))
+            image = BytesIO()                        
+            plt.axis('off')
+            plt.quiver(X, Y, X_dir, Y_dir,linewidths=0.5, color="r")
+            plt.imshow(output)
+
+            plt.savefig(image, format='png')
+            png_as_text = str(base64.b64encode(image.getvalue()))
+
+            frames_movimiento.append({ 'imagen': png_as_text+""})
 
         out.write(output)
 
