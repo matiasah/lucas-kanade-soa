@@ -36,7 +36,8 @@
     <div class="row justify-content-center d-flex">
 
         <div class="video" *ngIf="videoResponse">
-            
+
+            <img width="50%" *ngFor="let imagen of videoResponse" src="{{ extractBase64(imagen) }}" />
 
         </div>
 

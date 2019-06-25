@@ -4,6 +4,8 @@ import time
 from flask import Blueprint, render_template, jsonify, send_file, request, Response, stream_with_context, make_response
 from werkzeug.datastructures import ImmutableMultiDict
 import base64
+import matplotlib
+matplotlib.use('GTK3Agg')
 import matplotlib.pyplot as plt
 from io import BytesIO
 
@@ -138,10 +140,11 @@ def optical_flow():
 
             #jpg_as_text = str(base64.b64encode(buffer))
             image = BytesIO()
-            #plt.clf()
+            plt.cla()
+            plt.clf()
             plt.axis('off')
             plt.quiver(X, Y, X_dir, Y_dir,linewidths=0.5, color="r")
-            plt.imshow(output)
+            plt.imshow(cv.cvtColor(output, cv.COLOR_BGR2RGB))
 
             plt.savefig(image, format='png')
             png_as_text = str(base64.b64encode(image.getvalue()))
