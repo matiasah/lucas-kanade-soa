@@ -20,7 +20,7 @@ def optical_flow():
     start = time.time()
 
     # Parameters for Shi-Tomasi corner detection
-    feature_params = dict(maxCorners = 25, qualityLevel = 0.6, minDistance = 2, blockSize = 7)
+    feature_params = dict(maxCorners = 25, qualityLevel = 0.7, minDistance = 2, blockSize = 7   )
 
     # Parameters for Lucas-Kanade optical flow
     lk_params = dict(winSize = (15,15), maxLevel = 5, criteria = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03))
@@ -53,7 +53,7 @@ def optical_flow():
     pathOut = "output/" + video.filename
     fps = 30
     
-    fourcc = cv.VideoWriter_fourcc(*'MPEG')
+    fourcc = cv.VideoWriter_fourcc(*'X264')
     out = cv.VideoWriter(pathOut, fourcc, 30.0, size, True)
 
     ## Almacenar todos los frames en los q se detectan movimiento
@@ -119,10 +119,10 @@ def optical_flow():
 
             ## Calcular la velocidad para emitir una alerta
             desplazamiento = np.array((a,b)) - np.array((c,d))
-            if( abs(desplazamiento[0]) > 2 or abs(desplazamiento[1]) > 2):
+            if( abs(a-c) > 2 or abs(b-d) > 2):
                 movimiento_detectado = True
-                X_dir.append(desplazamiento[0])
-                Y_dir.append(desplazamiento[1])
+                X_dir.append(a-c)
+                Y_dir.append(b-d)
                 X.append(c)
                 Y.append(d)
                 

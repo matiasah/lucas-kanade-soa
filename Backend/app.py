@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask
 from flask_cors import CORS
 import optical
 import procesado
@@ -9,7 +9,7 @@ CORS(app)
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template("index.html")
+    return "Hello!!"
 
 @app.after_request
 def after_request(response):

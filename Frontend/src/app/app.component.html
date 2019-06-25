@@ -15,8 +15,6 @@
                             (change)="handleFileInput($event.target.files)">
                     </div>
 
-                    <mat-progress-bar mode="query" *ngIf="enviando"></mat-progress-bar>
-
                     <div class="col-sm-12 col-md-3 offset-sm-0 offset-md-6" *ngIf="!enviando">
                         <button class="w-100" type="submit" mat-raised-button color="primary">Enviar</button>
                     </div>
@@ -27,7 +25,8 @@
     </div>
 
     <div class="row justify-content-center d-flex" *ngIf="!videoResponse && enviando">
-        <img src="https://media3.giphy.com/media/bAplZhiLAsNnG/giphy.gif">
+        <div class="row">Procesando video...</div>
+        <mat-progress-bar mode="indeterminate" *ngIf="enviando"></mat-progress-bar>
     </div>
 
     <div class="row justify-content-center d-flex" *ngIf="videoResponse">
@@ -37,18 +36,7 @@
     <div class="row justify-content-center d-flex">
 
         <div class="video" *ngIf="videoResponse">
-
-            <img width="50%" *ngFor="let imagen of videoResponse" src="{{ extractBase64(imagen) }}" />
-
-            <!--
-                <div class="row">
-                    <div class="col-12 justify-content-center d-flex">
-                        <video width="320" height="240" controls>
-                            <source [src]="downloadPath" type="video/mp4">
-                        </video>
-                    </div>
-                </div>
-            -->
+            
 
         </div>
 

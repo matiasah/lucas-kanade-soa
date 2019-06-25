@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -15,10 +14,8 @@ export class AppComponent {
   // Video que se va a subir para analizar
   public video: any;
 
-  // Video de la respuesta
-  public videoResponse: any;
-
-  public srcVideo: string;
+  // Video de la respuesta (conjunto de imágenes con el resultado)
+  public videoResponse: any;  
 
   // Ruta de descarga del vide procesado
   public downloadPath: string;
@@ -31,8 +28,7 @@ export class AppComponent {
   public form: NgForm;
 
   public constructor(
-    private http: HttpClient,
-    public sanitizer: DomSanitizer
+    private http: HttpClient
   ) {
 
   }
@@ -62,11 +58,8 @@ export class AppComponent {
           // Indicar que ya se recivió la respuesta
           this.enviando = false;
 
-          this.srcVideo = this.host + 'video/' + this.video.name;
-
-          this.srcVideo = this.sanitizer.bypassSecurityTrustUrl(this.srcVideo) as string;
-
-          this.downloadPath = this.host + 'video-output/' + this.video.name;
+          // Ruta de descarga del video
+          this.downloadPath = this.host + "video-output/" + this.video.name;
 
         }
       },
