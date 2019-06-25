@@ -27,7 +27,7 @@
     </div>
 
     <div class="row justify-content-center d-flex" *ngIf="!videoResponse && enviando">
-        <img src="https://media3.giphy.com/media/bAplZhiLAsNnG/giphy.gif" alt="trabajando">
+        <img src="https://media3.giphy.com/media/bAplZhiLAsNnG/giphy.gif">
     </div>
 
     <div class="row justify-content-center d-flex" *ngIf="videoResponse">
@@ -36,34 +36,19 @@
 
     <div class="row justify-content-center d-flex">
 
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-        <mat-spinner diameter="64" *ngIf="enviando"></mat-spinner>
-
-
         <div class="video" *ngIf="videoResponse">
-            <!--
-            <video controls (click)="toggleVideo()" #videoPlayer>
-                <source [src]="srcVideo" type='video/*' />
-                Browser not supported
-            </video>
-            -->
 
             <img width="50%" *ngFor="let imagen of videoResponse" src="{{ extractBase64(imagen) }}" />
+
+            <!--
+                <div class="row">
+                    <div class="col-12 justify-content-center d-flex">
+                        <video width="320" height="240" controls>
+                            <source [src]="downloadPath" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            -->
 
         </div>
 

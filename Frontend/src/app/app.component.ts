@@ -10,7 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class AppComponent {
 
-  private host = "http://localhost:5000/"
+  private host = 'http://localhost:5000/';
 
   // Video que se va a subir para analizar
   public video: any;
@@ -24,7 +24,7 @@ export class AppComponent {
   public downloadPath: string;
 
   // Indicar que se encuentra enviando el video
-  public enviando: boolean = false;
+  public enviando = false;
 
   // Formulario
   @ViewChild('form', { static: true })
@@ -47,7 +47,7 @@ export class AppComponent {
     formData.append('video', this.video);
 
     // Construir el request para enviar
-    let req = new HttpRequest('POST', this.host + "lucas-kanade", formData, { responseType: "json" });
+    const req = new HttpRequest('POST', this.host + 'lucas-kanade', formData, { responseType: 'json' });
 
     // Enviar la peticion post al servicio de lucas kanade
     this.http.request<any>(req).subscribe(
@@ -62,11 +62,11 @@ export class AppComponent {
           // Indicar que ya se recivió la respuesta
           this.enviando = false;
 
-          this.srcVideo = this.host + "video/" + this.video.name;
+          this.srcVideo = this.host + 'video/' + this.video.name;
 
           this.srcVideo = this.sanitizer.bypassSecurityTrustUrl(this.srcVideo) as string;
 
-          this.downloadPath = this.host + "video-output/" + this.video.name;
+          this.downloadPath = this.host + 'video-output/' + this.video.name;
 
         }
       },
@@ -84,7 +84,7 @@ export class AppComponent {
 
   public extractBase64(imagen: any) {
     imagen.imagen = imagen.imagen.substring(2, imagen.imagen.length - 1);
-    return "data:image/png;base64," + imagen.imagen;
+    return 'data:image/png;base64,' + imagen.imagen;
   }
 }
 

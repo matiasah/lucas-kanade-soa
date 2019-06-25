@@ -1,5 +1,5 @@
 
 *.pyc
 
-Backend/output/
-Backend/uploads/
+Backend/output/*
+Backend/uploads/*
