@@ -32,4 +32,4 @@ services:
       - '5000:5000'
     expose:
       - '5000'
-    command: python3 app.py
+    command: /bin/sh start.sh
